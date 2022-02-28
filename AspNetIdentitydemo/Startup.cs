@@ -1,6 +1,8 @@
+using AspNetIdentitydemo.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,9 +27,10 @@ namespace AspNetIdentitydemo
         {
             services.AddControllersWithViews();
 
-            services.AddIdentityCore<string>(options  =>
+            services.AddIdentityCore<MyUser>(options =>
             {
             });
+            services.AddScoped<IUserStore<MyUser>, MyUserStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
