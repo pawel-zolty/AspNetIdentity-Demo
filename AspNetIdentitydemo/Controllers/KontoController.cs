@@ -1,8 +1,11 @@
 ﻿using AspNetIdentitydemo.Identity;
 using AspNetIdentitydemo.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace AspNetIdentitydemo.Controllers
@@ -42,6 +45,39 @@ namespace AspNetIdentitydemo.Controllers
                 }
 
                 return View("Success");
+            }
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginModel login)
+        {
+            const string scheme = CookieAuthenticationDefaults.AuthenticationScheme;
+
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByNameAsync(login.UserName);
+
+                if (user != null && await _userManager.CheckPasswordAsync(user, login.Password))
+                {
+
+                    var identity = new ClaimsIdentity(scheme);
+                    identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
+                    identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
+
+                    await HttpContext.SignInAsync(scheme, new ClaimsPrincipal(identity));
+                    return RedirectToAction("Index", "Home");
+                }
+
+                ModelState.AddModelError("", "Invalid username or password");
             }
 
             return View();
