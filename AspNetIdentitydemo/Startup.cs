@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,10 +30,14 @@ namespace AspNetIdentitydemo
         {
             services.AddControllersWithViews();
 
+            var connString = "Server=.; Database=AspIdentityDemo;Integrated Security=true";
+            services.AddDbContext<IdentityDbContext>(options => options.UseSqlServer(connString));
+
             services.AddIdentityCore<IdentityUser>(options =>
             {
             });
-            services.AddScoped<IUserStore<IdentityUser>, CustomIdentityUserStore>();
+            //services.AddScoped<IUserStore<IdentityUser>, CustomIdentityUserStore>();
+            services.AddScoped<IUserStore<IdentityUser>, UserOnlyStore<IdentityUser, IdentityDbContext>>();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
