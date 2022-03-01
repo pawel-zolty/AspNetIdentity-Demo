@@ -11,9 +11,7 @@ namespace AspNetIdentitydemo.Identity
     {
         public static DbConnection GetOpenConnection()
         {
-            var connection = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB);" +
-                                    "database=AspIdentityDemo;" +
-                                    "trusted_connection=yes;");
+            var connection = new SqlConnection("Server=.; Database=AspIdentityDemo;Integrated Security=true");
             connection.Open();
 
             return connection;
@@ -27,7 +25,7 @@ namespace AspNetIdentitydemo.Identity
                     "INSERT INTO MyUsers([Id]," +
                     "[UserName]," +
                     "[NormalizedUserName]," +
-                    "[PasswordHash]" +
+                    "[PasswordHash])" +
                     "VALUES (@id, @username, @normalizedusername, @passwordhash)",
                     new
                     {
