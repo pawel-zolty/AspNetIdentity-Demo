@@ -12,9 +12,10 @@ namespace AspNetIdentitydemo.Controllers
 {
     public class KontoController : Controller
     {
-        private readonly UserManager<MyUser> _userManager;
+        //private readonly UserManager<MyUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public KontoController(UserManager<MyUser> userManager)
+        public KontoController(UserManager<IdentityUser> userManager)
         {
             _userManager = userManager ?? throw new System.ArgumentNullException(nameof(userManager));
         }
@@ -35,7 +36,7 @@ namespace AspNetIdentitydemo.Controllers
 
                 if (user == null)
                 {
-                    user = new MyUser
+                    user = new IdentityUser
                     {
                         Id = Guid.NewGuid().ToString(),
                         UserName = register.UserName

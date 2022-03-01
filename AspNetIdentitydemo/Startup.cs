@@ -28,10 +28,10 @@ namespace AspNetIdentitydemo
         {
             services.AddControllersWithViews();
 
-            services.AddIdentityCore<MyUser>(options =>
+            services.AddIdentityCore<IdentityUser>(options =>
             {
             });
-            services.AddScoped<IUserStore<MyUser>, MyUserStore>();
+            services.AddScoped<IUserStore<IdentityUser>, CustomIdentityUserStore>();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
