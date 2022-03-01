@@ -32,15 +32,15 @@ namespace AspNetIdentitydemo
 
             var connString = "Server=.; Database=AspIdentityDemo;Integrated Security=true";
             var migrationAssembly = typeof(Startup).Assembly.GetName().Name;
-            services.AddDbContext<IdentityDbContext>(options
+            services.AddDbContext<MyCustomUserDbContext>(options
                 => options.UseSqlServer(connString, sqlOptions
                     => sqlOptions.MigrationsAssembly(migrationAssembly)));
 
-            services.AddIdentityCore<IdentityUser>(options =>
+            services.AddIdentityCore<MyCustomUser>(options =>
             {
             });
             //services.AddScoped<IUserStore<IdentityUser>, CustomIdentityUserStore>();
-            services.AddScoped<IUserStore<IdentityUser>, UserOnlyStore<IdentityUser, IdentityDbContext>>();
+            services.AddScoped<IUserStore<MyCustomUser>, UserOnlyStore<MyCustomUser, MyCustomUserDbContext>>();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
