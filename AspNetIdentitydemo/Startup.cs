@@ -30,7 +30,7 @@ namespace AspNetIdentitydemo
         {
             services.AddControllersWithViews();
 
-            var connString = "Server=.; Database=AspIdentityDemo;Integrated Security=true";
+            var connString = "Server=.; Database=AspIdentityDemoDb2;Integrated Security=true";
             var migrationAssembly = typeof(Startup).Assembly.GetName().Name;
             services.AddDbContext<MyCustomUserDbContext>(options
                 => options.UseSqlServer(connString, sqlOptions
