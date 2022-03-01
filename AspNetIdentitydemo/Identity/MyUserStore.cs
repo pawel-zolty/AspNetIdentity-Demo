@@ -107,7 +107,8 @@ namespace AspNetIdentitydemo.Identity
 
         public Task SetPasswordHashAsync(MyUser user, string passwordHash, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            user.PasswordHash = passwordHash;
+            return Task.CompletedTask;
         }
 
         public Task SetUserNameAsync(MyUser user, string userName, CancellationToken cancellationToken)
