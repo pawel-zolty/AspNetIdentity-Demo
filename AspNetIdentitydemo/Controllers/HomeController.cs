@@ -1,4 +1,5 @@
 ﻿using AspNetIdentitydemo.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,6 +25,12 @@ namespace AspNetIdentitydemo.Controllers
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [Authorize]
+        public IActionResult About()
         {
             return View();
         }
