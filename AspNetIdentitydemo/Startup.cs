@@ -1,5 +1,6 @@
 using AspNetIdentitydemo.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,6 +29,9 @@ namespace AspNetIdentitydemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            string googleClientId = "";
+            string googleClientSecret = "";
+
             services.AddControllersWithViews();
 
             var connString = "Server=.; Database=AspIdentityDemoDb2;Integrated Security=true";
@@ -46,6 +50,14 @@ namespace AspNetIdentitydemo
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
                 {
                     options.LoginPath = "/Konto/Login";
+                });
+
+            services.AddAuthentication()
+                .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+                {
+                    options.ClientId = googleClientId;
+                    options.ClientSecret = googleClientSecret;
+                    options.SignInScheme = IdentityConstants.ExternalScheme;
                 });
         }
 
