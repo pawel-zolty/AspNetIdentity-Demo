@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -34,7 +35,8 @@ namespace AspNetIdentitydemo
 
             services.AddControllersWithViews();
 
-            var connString = "Server=.; Database=AspIdentityDemoDb2;Integrated Security=true";
+            var connString = "Data Source=(LocalDb)\\MSSQLLocalDB;Initial Catalog=AspNetIdentityDemo;Integrated Security=true";
+            //var connString = "Server=.; Database=AspIdentityDemoDb2;Integrated Security=true";
             var migrationAssembly = typeof(Startup).Assembly.GetName().Name;
             services.AddDbContext<MyCustomUserDbContext>(options
                 => options.UseSqlServer(connString, sqlOptions
@@ -46,11 +48,43 @@ namespace AspNetIdentitydemo
             //services.AddScoped<IUserStore<IdentityUser>, CustomIdentityUserStore>();
             services.AddScoped<IUserStore<MyCustomUser>, UserOnlyStore<MyCustomUser, MyCustomUserDbContext>>();
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            // Services used by identity
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+                options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            })
+            .AddCookie(IdentityConstants.ApplicationScheme, o =>
+            {
+                o.LoginPath = new PathString("/Account/Login");
+                o.Events = new CookieAuthenticationEvents
                 {
-                    options.LoginPath = "/Konto/Login";
-                });
+                    OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
+                };
+            })
+            .AddCookie(IdentityConstants.ExternalScheme, o =>
+            {
+                o.Cookie.Name = IdentityConstants.ExternalScheme;
+                o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            })
+            .AddCookie(IdentityConstants.TwoFactorRememberMeScheme, o =>
+            {
+                o.Cookie.Name = IdentityConstants.TwoFactorRememberMeScheme;
+                o.Events = new CookieAuthenticationEvents
+                {
+                    OnValidatePrincipal = SecurityStampValidator.ValidateAsync<ITwoFactorSecurityStampValidator>
+                };
+            })
+            .AddCookie(IdentityConstants.TwoFactorUserIdScheme, o =>
+            {
+                o.Cookie.Name = IdentityConstants.TwoFactorUserIdScheme;
+                o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            });
+
+
+
+            services.ConfigureApplicationCookie(options => options.LoginPath = "/Konto/Login");
 
             services.AddAuthentication()
                 .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
