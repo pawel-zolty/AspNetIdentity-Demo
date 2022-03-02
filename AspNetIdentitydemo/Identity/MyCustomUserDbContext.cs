@@ -9,6 +9,8 @@ namespace AspNetIdentitydemo.Identity
         {
         }
 
+        public DbSet<Organization> Organizations { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -19,6 +21,9 @@ namespace AspNetIdentitydemo.Identity
             {
                 org.ToTable("Organizations");
                 org.HasKey(x => x.Id);
+                org.Property(o => o.ExternalId).IsRequired();
+                org.HasIndex(o => o.ExternalId).IsUnique();
+
                 org.HasMany<MyCustomUser>().WithOne()
                     .HasForeignKey(user => user.OrganizationId)
                     .IsRequired();

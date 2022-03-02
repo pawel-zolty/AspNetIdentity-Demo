@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -16,12 +18,15 @@ namespace AspNetIdentitydemo.Controllers
         //private readonly UserManager<IdentityUser> _userManager;
         private readonly UserManager<MyCustomUser> _userManager;
         private readonly IUserClaimsPrincipalFactory<MyCustomUser> _userClaimsPrincipalFactory;
+        private readonly MyCustomUserDbContext _dbContext;
 
         public KontoController(UserManager<MyCustomUser> userManager,
-            IUserClaimsPrincipalFactory<MyCustomUser> userClaimsPrincipalFactory)
+            IUserClaimsPrincipalFactory<MyCustomUser> userClaimsPrincipalFactory,
+            MyCustomUserDbContext dbContext)
         {
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             _userClaimsPrincipalFactory = userClaimsPrincipalFactory ?? throw new ArgumentNullException(nameof(userClaimsPrincipalFactory));
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
         [HttpGet]
@@ -40,6 +45,13 @@ namespace AspNetIdentitydemo.Controllers
 
                 if (user == null)
                 {
+                    var externalOrganizationId = 1;
+                    var organization = await EnsureOrganization(externalOrganizationId);
+                    if (organization == null)
+                    {
+                        throw new Exception("Cannot link to an organization");
+                    }
+
                     user = new MyCustomUser
                     {
                         Id = Guid.NewGuid().ToString(),
@@ -54,6 +66,24 @@ namespace AspNetIdentitydemo.Controllers
             }
 
             return View();
+        }
+
+        private async Task<Organization> EnsureOrganization(int externalId)
+        {
+            var organization = await _dbContext.Organizations.Where(o => o.ExternalId == externalId).SingleOrDefaultAsync();
+
+            if (organization == null)
+            {
+                organization = new Organization
+                {
+                    Name = "First Demo Org",
+                    ExternalId = externalId
+                };
+                _dbContext.Organizations.Add(organization);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            return organization;
         }
 
         [HttpGet]
