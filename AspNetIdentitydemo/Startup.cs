@@ -40,21 +40,10 @@ namespace AspNetIdentitydemo
                 => options.UseSqlServer(connString, sqlOptions
                     => sqlOptions.MigrationsAssembly(migrationAssembly)));
 
-            //services.AddIdentityCore<MyCustomUser>(options =>
-            //{
-            //});
             services.AddIdentity<MyCustomUser, IdentityRole>(options =>
             {
             })
             .AddEntityFrameworkStores<MyCustomUserDbContext>();
-            //services.AddScoped<IUserStore<IdentityUser>, CustomIdentityUserStore>();
-            //services.AddScoped<IUserStore<MyCustomUser>, UserOnlyStore<MyCustomUser, MyCustomUserDbContext>>();
-
-            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            //    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-            //    {
-            //        options.LoginPath = "/Konto/Login";
-            //    });
 
             services.ConfigureApplicationCookie(options => options.LoginPath = "/Konto/Login");
 

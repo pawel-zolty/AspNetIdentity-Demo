@@ -14,8 +14,6 @@ namespace AspNetIdentitydemo.Controllers
 {
     public class KontoController : Controller
     {
-        //private readonly UserManager<MyUser> _userManager;
-        //private readonly UserManager<IdentityUser> _userManager;
         private readonly UserManager<MyCustomUser> _userManager;
         private readonly IUserClaimsPrincipalFactory<MyCustomUser> _userClaimsPrincipalFactory;
         private readonly MyCustomUserDbContext _dbContext;
@@ -96,7 +94,6 @@ namespace AspNetIdentitydemo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel login)
         {
-            //const string scheme = CookieAuthenticationDefaults.AuthenticationScheme;
             string scheme = IdentityConstants.ApplicationScheme;
 
             if (ModelState.IsValid)
