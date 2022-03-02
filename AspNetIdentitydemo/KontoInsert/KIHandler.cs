@@ -21,38 +21,6 @@ namespace AspNetIdentitydemo.KontoInsert
             : base(options, logger, encoder, clock)
         { }
 
-        protected override async Task<AuthenticationTicket> CreateTicketAsync(
-            ClaimsIdentity identity,
-            AuthenticationProperties properties,
-            OAuthTokenResponse tokens)
-        {
-            var sessionId = Request.Query["session_id"];
-
-            // Get the user
-            using var request = new HttpRequestMessage(HttpMethod.Get, Options.UserInformationEndpoint + $"?sessionId={sessionId}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
-            var productInfoHeaderValue = new ProductInfoHeaderValue(new ProductHeaderValue("rysy"));
-            request.Headers.UserAgent.Add(productInfoHeaderValue);
-
-
-            var response = await Backchannel.SendAsync(request, Context.RequestAborted);
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new HttpRequestException($"An error occurred when retrieving KI user information ({response.StatusCode}). Please check if the authentication information is correct and the corresponding Google+ API is enabled.");
-            }
-
-            var userDataString = await response.Content.ReadAsStringAsync();
-            var payload = JsonDocument.Parse(userDataString);
-
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
-            var context =
-                new OAuthCreatingTicketContext(claimsPrincipal, properties, Context, Scheme, Options, Backchannel, tokens, payload.RootElement);
-            context.RunClaimActions();
-
-            await Events.CreatingTicket(context);
-            return new AuthenticationTicket(context.Principal, context.Properties, Scheme.Name);
-        }
-
         // TODO: Abstract this properties override pattern into the base class?
         protected override string BuildChallengeUrl(AuthenticationProperties properties, string redirectUri)
         {
@@ -103,6 +71,38 @@ namespace AspNetIdentitydemo.KontoInsert
 
                 return OAuthTokenResponse.Failed(new Exception("An error occurred while retrieving an access token."));
             }
+        }
+
+        protected override async Task<AuthenticationTicket> CreateTicketAsync(
+            ClaimsIdentity identity,
+            AuthenticationProperties properties,
+            OAuthTokenResponse tokens)
+        {
+            var sessionId = Request.Query["session_id"];
+
+            // Get the user
+            using var request = new HttpRequestMessage(HttpMethod.Get, Options.UserInformationEndpoint + $"?sessionId={sessionId}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+            var productInfoHeaderValue = new ProductInfoHeaderValue(new ProductHeaderValue("rysy"));
+            request.Headers.UserAgent.Add(productInfoHeaderValue);
+
+
+            var response = await Backchannel.SendAsync(request, Context.RequestAborted);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"An error occurred when retrieving KI user information ({response.StatusCode}). Please check if the authentication information is correct and the corresponding Google+ API is enabled.");
+            }
+
+            var userDataString = await response.Content.ReadAsStringAsync();
+            var payload = JsonDocument.Parse(userDataString);
+
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+            var context =
+                new OAuthCreatingTicketContext(claimsPrincipal, properties, Context, Scheme, Options, Backchannel, tokens, payload.RootElement);
+            context.RunClaimActions();
+
+            await Events.CreatingTicket(context);
+            return new AuthenticationTicket(context.Principal, context.Properties, Scheme.Name);
         }
 
         private async Task<string> GetSth(Func<HttpRequestMessage, Task<HttpResponseMessage>> requestHandler, OAuthCodeExchangeContext context)
