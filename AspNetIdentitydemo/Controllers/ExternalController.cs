@@ -13,7 +13,8 @@ namespace AspNetIdentitydemo.Controllers
 {
     public class ExternalController : Controller
     {
-        private static string SCHEME = IdentityConstants.ExternalScheme;
+        private static string SCHEME = IdentityConstants.ApplicationScheme;
+        private static string EXTERNAL_SCHEME = IdentityConstants.ExternalScheme;
         private readonly UserManager<MyCustomUser> _userManager;
         private readonly IUserClaimsPrincipalFactory<MyCustomUser> _claimsPrincipalFactory;
         private readonly MyCustomUserDbContext _dbContext;
@@ -42,7 +43,7 @@ namespace AspNetIdentitydemo.Controllers
         [HttpGet]
         public async Task<IActionResult> LoginCallback()
         {
-            var result = await HttpContext.AuthenticateAsync(SCHEME);
+            var result = await HttpContext.AuthenticateAsync(EXTERNAL_SCHEME);
             var externalUserId = result.Principal.FindFirstValue("sub")
                 ?? result.Principal.FindFirstValue(ClaimTypes.NameIdentifier)
                 ?? throw new Exception("Cannot find external id");
@@ -80,7 +81,7 @@ namespace AspNetIdentitydemo.Controllers
 
             if (user == null) return View("Error");
 
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            await HttpContext.SignOutAsync(EXTERNAL_SCHEME);
             var claimsPrincipal = await _claimsPrincipalFactory.CreateAsync(user);
             await HttpContext.SignInAsync(SCHEME, claimsPrincipal);
 
