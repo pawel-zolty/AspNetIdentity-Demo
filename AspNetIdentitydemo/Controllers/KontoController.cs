@@ -15,10 +15,13 @@ namespace AspNetIdentitydemo.Controllers
         //private readonly UserManager<MyUser> _userManager;
         //private readonly UserManager<IdentityUser> _userManager;
         private readonly UserManager<MyCustomUser> _userManager;
+        private readonly IUserClaimsPrincipalFactory<MyCustomUser> _userClaimsPrincipalFactory;
 
-        public KontoController(UserManager<MyCustomUser> userManager)
+        public KontoController(UserManager<MyCustomUser> userManager,
+            IUserClaimsPrincipalFactory<MyCustomUser> userClaimsPrincipalFactory)
         {
-            _userManager = userManager ?? throw new System.ArgumentNullException(nameof(userManager));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _userClaimsPrincipalFactory = userClaimsPrincipalFactory ?? throw new ArgumentNullException(nameof(userClaimsPrincipalFactory));
         }
 
         [HttpGet]
@@ -72,12 +75,9 @@ namespace AspNetIdentitydemo.Controllers
 
                 if (user != null && await _userManager.CheckPasswordAsync(user, login.Password))
                 {
+                    var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
 
-                    var identity = new ClaimsIdentity(scheme);
-                    identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
-                    identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
-
-                    await HttpContext.SignInAsync(scheme, new ClaimsPrincipal(identity));
+                    await HttpContext.SignInAsync(scheme, principal);
                     return RedirectToAction("Index", "Home");
                 }
 
