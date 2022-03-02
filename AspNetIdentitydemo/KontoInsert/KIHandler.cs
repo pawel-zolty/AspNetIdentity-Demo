@@ -65,14 +65,6 @@ namespace AspNetIdentitydemo.KontoInsert
             queryStrings.Add("redirect_uri", redirectUri);
             queryStrings.Add("scope", scope); // KI scope tez nizej dla google
 
-            // google params
-            //AddQueryString(queryStrings, properties, GoogleChallengeProperties.ScopeKey, FormatScope, Options.Scope);
-            //AddQueryString(queryStrings, properties, GoogleChallengeProperties.AccessTypeKey, Options.AccessType);
-            //AddQueryString(queryStrings, properties, GoogleChallengeProperties.ApprovalPromptKey);
-            //AddQueryString(queryStrings, properties, GoogleChallengeProperties.PromptParameterKey);
-            //AddQueryString(queryStrings, properties, GoogleChallengeProperties.LoginHintKey);
-            //AddQueryString(queryStrings, properties, GoogleChallengeProperties.IncludeGrantedScopesKey, v => v?.ToString().ToLower(), (bool?)null);
-
             var state = Options.StateDataFormat.Protect(properties);
             queryStrings.Add("state", state);
 

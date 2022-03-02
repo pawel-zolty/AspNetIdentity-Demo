@@ -17,10 +17,6 @@ namespace AspNetIdentitydemo.KontoInsert
             UserAgent = "rysy";
             AccountRole = "GratyfikantPortalEmployee";
 
-            //Scope.Add("openid");
-            //Scope.Add("profile");
-            //Scope.Add("email");
-
             ClaimActions.MapJsonKey(JwtClaimTypes.Subject, "id");
             ClaimActions.MapJsonKey(JwtClaimTypes.Email, "login");
             ClaimActions.MapCustomJson(JwtClaimTypes.Name, user => $"{user.GetString("name")} {user.GetString("surname")}".Trim());
@@ -28,11 +24,6 @@ namespace AspNetIdentitydemo.KontoInsert
             ClaimActions.MapJsonKey(JwtClaimTypes.FamilyName, "surname");
             ClaimActions.MapJsonKey(JwtClaimTypes.Picture, "photo");
         }
-
-        /// <summary>
-        /// access_type. Set to 'offline' to request a refresh token.
-        /// </summary>
-        public string AccessType { get; set; }
 
         public string UserAgent { get; set; }
 
