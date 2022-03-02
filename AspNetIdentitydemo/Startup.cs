@@ -36,17 +36,22 @@ namespace AspNetIdentitydemo
                 => options.UseSqlServer(connString, sqlOptions
                     => sqlOptions.MigrationsAssembly(migrationAssembly)));
 
-            services.AddIdentityCore<MyCustomUser>(options =>
+            //services.AddIdentityCore<MyCustomUser>(options =>
+            //{
+            //});
+            services.AddIdentity<MyCustomUser, IdentityRole>(options =>
             {
-            });
+            })
+            .AddEntityFrameworkStores<MyCustomUserDbContext>();
             //services.AddScoped<IUserStore<IdentityUser>, CustomIdentityUserStore>();
-            services.AddScoped<IUserStore<MyCustomUser>, UserOnlyStore<MyCustomUser, MyCustomUserDbContext>>();
+            //services.AddScoped<IUserStore<MyCustomUser>, UserOnlyStore<MyCustomUser, MyCustomUserDbContext>>();
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-                {
-                    options.LoginPath = "/Konto/Login";
-                });
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            //    {
+            //        options.LoginPath = "/Konto/Login";
+            //    });
+            services.ConfigureApplicationCookie(options => options.LoginPath = "/Konto/Login");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -63,7 +63,8 @@ namespace AspNetIdentitydemo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel login)
         {
-            const string scheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //const string scheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            string scheme = IdentityConstants.ApplicationScheme;
 
             if (ModelState.IsValid)
             {
