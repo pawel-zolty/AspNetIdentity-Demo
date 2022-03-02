@@ -1,4 +1,5 @@
 ﻿using AspNetIdentitydemo.Identity;
+using AspNetIdentitydemo.KontoInsert;
 using AspNetIdentitydemo.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -24,7 +25,8 @@ namespace AspNetIdentitydemo.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            return RedirectToAction("Login", "External", new { provider = GoogleDefaults.AuthenticationScheme });
+            return RedirectToAction("Login", "External", new { provider = KontoInsertDefaults.AuthenticationScheme });
+            //return RedirectToAction("Login", "External", new { provider = GoogleDefaults.AuthenticationScheme });
         }
     }
 }

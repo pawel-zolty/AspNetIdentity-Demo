@@ -1,4 +1,5 @@
 using AspNetIdentitydemo.Identity;
+using AspNetIdentitydemo.KontoInsert;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
@@ -52,6 +53,12 @@ namespace AspNetIdentitydemo
                 {
                     options.ClientId = googleClientId;
                     options.ClientSecret = googleClientSecret;
+                    options.SignInScheme = IdentityConstants.ExternalScheme;
+                })
+                .AddKI(options =>
+                {
+                    options.ClientId = "rysy";
+                    options.ClientSecret = "";
                     options.SignInScheme = IdentityConstants.ExternalScheme;
                 });
         }
