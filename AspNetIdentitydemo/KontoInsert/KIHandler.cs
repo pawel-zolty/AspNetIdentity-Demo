@@ -59,7 +59,7 @@ namespace AspNetIdentitydemo.KontoInsert
         {
             try
             {
-                var tokenString = await GetSth((r) => Backchannel.SendAsync(r, HttpCompletionOption.ResponseHeadersRead, Context.RequestAborted), context);
+                var tokenString = await GetToken((r) => Backchannel.SendAsync(r, HttpCompletionOption.ResponseHeadersRead, Context.RequestAborted), context);
 
                 var payload = JsonDocument.Parse(tokenString);
 
@@ -86,7 +86,6 @@ namespace AspNetIdentitydemo.KontoInsert
             var productInfoHeaderValue = new ProductInfoHeaderValue(new ProductHeaderValue("rysy"));
             request.Headers.UserAgent.Add(productInfoHeaderValue);
 
-
             var response = await Backchannel.SendAsync(request, Context.RequestAborted);
             if (!response.IsSuccessStatusCode)
             {
@@ -105,7 +104,7 @@ namespace AspNetIdentitydemo.KontoInsert
             return new AuthenticationTicket(context.Principal, context.Properties, Scheme.Name);
         }
 
-        private async Task<string> GetSth(Func<HttpRequestMessage, Task<HttpResponseMessage>> requestHandler, OAuthCodeExchangeContext context)
+        private async Task<string> GetToken(Func<HttpRequestMessage, Task<HttpResponseMessage>> requestHandler, OAuthCodeExchangeContext context)
         {
             using var request = new HttpRequestMessage(HttpMethod.Post, Options.TokenEndpoint)
                 .WithBasicKiAuthentication(Options.ClientId, Options.ClientSecret)
